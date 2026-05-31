@@ -7,8 +7,7 @@ export const runtime = "nodejs";
 export async function POST(req: Request) {
     console.log("Received Stripe webhook request");
   const signature = req.headers.get("stripe-signature");
-  const webhookSecret =
-  process.env.STRIPE_WEBHOOK_SECRET ?? process.env.STRIPE_SIGNING_SECRET;
+  const webhookSecret = process.env.STRIPE_SIGNING_SECRET;
 
   if (!signature) {
     return Response.json({ error: "Missing stripe-signature header" }, { status: 400 });
