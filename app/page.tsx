@@ -1,9 +1,32 @@
+"use client";
+
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status");
+  const message =
+    status === "success"
+      ? "Payment successful."
+      : status === "failed"
+      ? "Payment failed."
+      : null;
+
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+        {message ? (
+          <p
+            className={`rounded-full px-4 py-2 text-sm font-medium ${
+              status === "success"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
+            }`}
+          >
+            {message}
+          </p>
+        ) : null}
         <Image
           className="dark:invert"
           src="/next.svg"
