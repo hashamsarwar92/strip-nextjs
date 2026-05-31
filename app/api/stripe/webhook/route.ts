@@ -5,9 +5,10 @@ import { stripe } from "@/lib/stripe/stripe";
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
+    console.log("Received Stripe webhook request");
   const signature = req.headers.get("stripe-signature");
   const webhookSecret =
-    process.env.STRIPE_WEBHOOK_SECRET ?? process.env.STRIPE_SIGNING_SECRET;
+  process.env.STRIPE_WEBHOOK_SECRET ?? process.env.STRIPE_SIGNING_SECRET;
 
   if (!signature) {
     return Response.json({ error: "Missing stripe-signature header" }, { status: 400 });
@@ -17,6 +18,7 @@ export async function POST(req: Request) {
     return Response.json({ error: "Missing Stripe webhook secret" }, { status: 500 });
   }
 
+  console.log("Verifying Stripe webhook signature");
   const rawBody = await req.text();
 
   let event: Stripe.Event;
@@ -27,9 +29,14 @@ export async function POST(req: Request) {
     const message = error instanceof Error ? error.message : "Invalid webhook signature";
     console.error("Stripe webhook signature verification failed:", message);
 
+    console.log("Raw body:", rawBody);
+    console.log("Signature:", signature);
+    console.log("Webhook secret:", webhookSecret);
+
     return Response.json({ error: message }, { status: 400 });
   }
 
+  console.log("Stripe webhook signature verified successfully");
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
